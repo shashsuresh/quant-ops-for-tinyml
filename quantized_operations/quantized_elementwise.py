@@ -1,5 +1,5 @@
 import torch as tch
-from quantization.conversions import to_pytorch_tensor
+from conversions import to_pytorch_tensor
 
 class QuantizedElementwiseAddFn(tch.autograd.Function):
     '''

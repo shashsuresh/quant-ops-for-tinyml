@@ -1,5 +1,5 @@
 import torch as tch
-from quantization.conversions import round_tensor
+from conversions import round_tensor
 
 class QuantizedAvgPoolFn(tch.autograd.Function):
     '''

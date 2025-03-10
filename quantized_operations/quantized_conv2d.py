@@ -1,6 +1,6 @@
 import torch as tch
 from quantized_operations.truncate_activation import TruncateActivationRange
-from quantization.conversions import CONV_W_GRAD, to_pytorch_tensor
+from conversions import CONV_W_GRAD, to_pytorch_tensor
     
 class QuantizedConv2DFunc(tch.autograd.Function):
     '''
