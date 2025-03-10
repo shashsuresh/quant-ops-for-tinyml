@@ -1,5 +1,5 @@
 import torch as tch
-from conversions import to_pytorch_tensor
+from quantization.conversions import to_pytorch_tensor
 
 class ScaledLinear(tch.nn.Linear):
     '''
