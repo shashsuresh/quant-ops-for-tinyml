@@ -2,12 +2,10 @@
 This file contains some conversion functions and defines for quantized operations
 """
 
-QUANTIZED_GRADIENT = False
-ROUNDING = 'round'
-CONV_W_GRAD = True
-
 import torch
 import numpy as np
+
+from quant_config import ROUNDING
 
 def convert_to_np(x):
     '''

@@ -3,10 +3,10 @@ A collection of functions that are used to build
 a quantized network using the layers defined in `quantized_operations`
 '''
 from conversions import to_pytorch_tensor
-from quantized_operations.quantized_conv2d import QuantizedConv2D
-from quantized_operations.quantized_avgpool import QuantizedAvgPool
-from quantized_operations.quantized_elementwise import QuantizedElementWise
-from quantized_operations.quantized_mbblock import QuantizedMBBlock
+from quantized_operations import QuantizedConv2D
+from quantized_operations import QuantizedAvgPool
+from quantized_operations import QuantizedElementWise
+from quantized_operations import QuantizedMBBlock
 import torch as tch
 
 def construct_q_conv(conv_custom, w_bit=8, a_bit=None):

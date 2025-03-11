@@ -1,6 +1,7 @@
 import torch as tch
 from quantized_operations.truncate_activation import TruncateActivationRange
-from conversions import CONV_W_GRAD, to_pytorch_tensor
+from conversions import to_pytorch_tensor
+from quant_config import CONV_W_GRAD, QUANTIZE_GRADS, TRAIN_SCALES
     
 class QuantizedConv2DFunc(tch.autograd.Function):
     '''
@@ -73,6 +74,7 @@ class QuantizedConv2DFunc(tch.autograd.Function):
 
         # calculate gradient of zero_x
         grad_zero_x = grad_conv_in.sum([0, 2, 3])
+        grad_x = grad_conv_in
 
         if CONV_W_GRAD:
             # calculate gradient of weights
@@ -80,9 +82,19 @@ class QuantizedConv2DFunc(tch.autograd.Function):
         else:
             grad_w = None
         
-        # TODO check if we need per-channel quantization... - probably necessary when running simulation
+        ## This is a configuration that needs to be taken care of
+        if QUANTIZE_GRADS:
+            from utils import get_weight_scales
 
-        return grad_conv_in, grad_w, grad_bias, grad_zero_x, grad_zero_y, None, None, None, None, None
+            # Quantize grad_w
+            w_scales = get_weight_scales(grad_w, n_bit=8)
+            grad_w = (grad_w / w_scales.view(-1, 1, 1, 1)).round() * w_scales.view(-1, 1, 1, 1)
+
+            # Quantize grad_x
+            x_scales = get_weight_scales(grad_x.transpose(0, 1))
+            grad_x = (grad_x / x_scales.view(1, -1, 1, 1)).round() * x_scales.view(1, -1, 1, 1)
+
+        return grad_x, grad_w, grad_bias, grad_zero_x, grad_zero_y, None, None, None, None, None
     
 class QuantizedConv2D(tch.nn.Conv2d):
     '''
@@ -105,8 +117,12 @@ class QuantizedConv2D(tch.nn.Conv2d):
         ## Register these new parameters, as they will be used for later operations
         self.register_buffer('zero_x', to_pytorch_tensor(zero_x))
         self.register_buffer('zero_y', to_pytorch_tensor(zero_y))
-        # TODO check if we need scale training
-        self.register_buffer('effective_scale', effective_scale)
+
+        if TRAIN_SCALES:
+            print("Scales will also be trained!")
+            self.register_parameter('effective_scale', tch.nn.Parameter(effective_scale))
+        else:
+            self.register_buffer('effective_scale', effective_scale)
         
         self.w_bit = w_bit
         self.a_bit = a_bit if a_bit is not None else w_bit
