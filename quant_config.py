@@ -6,6 +6,7 @@ from colorama import Fore
 if os.path.exists("../quant_configs.yml"):
     with open ("../quant_configs.yml") as conf:
         print(Fore.GREEN, "Using ../quant_configs.yml to configure the quantization modules")
+        print(Fore.RESET, "")
         import yaml
         configs = yaml.load(conf, Loader=yaml.Loader)
         QUANTIZED_GRADIENT = configs['q_grad']
