@@ -1,9 +1,11 @@
 ## Some global configs
 import os
 import warnings
+from colorama import Fore
 
 if os.path.exists("../quant_configs.yml"):
     with open ("../quant_configs.yml") as conf:
+        print(Fore.GREEN, "Using ../quant_configs.yml to configure the quantization modules")
         import yaml
         configs = yaml.load(conf, Loader=yaml.Loader)
         QUANTIZED_GRADIENT = configs['q_grad']
@@ -11,7 +13,6 @@ if os.path.exists("../quant_configs.yml"):
         CONV_W_GRAD = configs['conv_w_grad']
         QUANTIZE_GRADS = configs['quantize_grads']
         TRAIN_SCALES = configs['train_scales']
-        print(QUANTIZE_GRADS)
 else:
     warnings.warn("No config specified, using default values!")
     ## Default values
