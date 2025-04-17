@@ -51,7 +51,7 @@ def append_qconv2d_head(quantized_model, num_classes=10):
     quantized_model[-2].weight.data = tch.from_numpy(weights).float()
     quantized_model[-2].bias.data = tch.from_numpy(bias).float()
     quantized_model[-2].x_scale = original_operation.x_scale
-    quantized_model[-2].y_scale = 1
+    quantized_model[-2].y_scale = original_operation.y_scale
 
     return quantized_model
 
